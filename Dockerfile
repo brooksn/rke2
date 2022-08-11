@@ -1,26 +1,46 @@
 ARG KUBERNETES_VERSION=dev
 
 # Build environment
-FROM rancher/hardened-build-base:v1.17.5b7 AS build
+FROM bcitest/hardened-build-base:v1.17.5b7 AS build
 ARG DAPPER_HOST_ARCH
 ENV ARCH $DAPPER_HOST_ARCH
-RUN set -x \
-    && apk --no-cache add \
-    bash \
-    curl \
-    file \
-    git \
-    libseccomp-dev \
-    rsync \
-    gcc \
-    bsd-compat-headers \
-    py-pip \
-    pigz \
-    tar \
-    yq
+ENV CC=/usr/local/musl/bin/musl-gcc
+# ENV LIBRARY_PATH=/usr/local/musl/lib
+RUN curl https://github.com/mikefarah/yq/releases/download/v4.27.2/yq_linux_${ARCH}.tar.gz -LOs && \
+    tar xzf yq_linux_amd64.tar.gz && \
+    mv yq_linux_${ARCH} /usr/bin/yq && \
+    chmod +x /usr/bin/yq
+# RUN zypper addrepo -p 105 http://download.opensuse.org/tumbleweed/repo/oss/ download.opensuse.org-oss
+RUN zypper addrepo -p 105 http://download.opensuse.org/tumbleweed/repo/oss/ download.opensuse.org-oss
+RUN zypper addrepo https://download.opensuse.org/repositories/windows:mingw:win64/openSUSE_Tumbleweed/windows:mingw:win64.repo
+RUN zypper --gpg-auto-import-keys refresh
+RUN zypper --non-interactive install bsdtar gawk pigz python3-pip zstd socat sudo vim bash-completion psmisc jq libseccomp-devel
+# RUN set -x \
+#     && apk --no-cache add \
+#     bash \
+#     curl \
+#     file \
+#     git \
+#     libseccomp-dev \
+#     rsync \
+#     gcc \
+#     bsd-compat-headers \
+#     py-pip \
+#     pigz \
+#     tar \
+#     yq
 
 RUN if [ "${ARCH}" != "s390x" ]; then \
-    	apk --no-cache add mingw-w64-gcc; \
+        zypper --non-interactive install --allow-vendor-change \
+        kubic-locale-archive-2.35-3.17 \
+        glibc-devel-2.35-6.1.x86_64 \
+        glibc-2.35-6.1.x86_64 \
+        filesystem-84.87-5.1.x86_64 \
+        mingw64-filesystem \
+        mingw64-cross-pkgconf \
+        pkgconf-pkg-config-1.8.0-1.10.x86_64 \
+        mingw64-cross-gcc; \
+    	# apk --no-cache add mingw-w64-gcc; \
     fi
 
 FROM registry.suse.com/bci/bci-base AS rpm-macros
@@ -31,7 +51,7 @@ FROM build AS dapper
 ENV DAPPER_ENV GODEBUG REPO TAG DRONE_TAG PAT_USERNAME PAT_TOKEN KUBERNETES_VERSION DOCKER_BUILDKIT DRONE_BUILD_EVENT IMAGE_NAME GCLOUD_AUTH ENABLE_REGISTRY
 ARG DAPPER_HOST_ARCH
 ENV ARCH $DAPPER_HOST_ARCH
-ENV DAPPER_OUTPUT ./dist ./bin ./build
+ENV DAPPER_OUTPUT ./bin ./build
 ENV DAPPER_DOCKER_SOCKET true
 ENV DAPPER_TARGET dapper
 ENV DAPPER_RUN_ARGS "--privileged --network host -v /tmp:/tmp -v rke2-pkg:/go/pkg -v rke2-cache:/root/.cache/go-build -v trivy-cache:/root/.cache/trivy"
@@ -47,16 +67,16 @@ RUN curl -sL https://storage.googleapis.com/kubernetes-release/release/$( \
     pip install codespell
 
 RUN curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.47.3
-RUN set -x \
-    && apk --no-cache add \
-    libarchive-tools \
-    zstd \
-    jq \
-    python2 \
-    \
-    && if [ "${ARCH}" != "s390x" ]; then \
-    	apk add --no-cache rpm-dev; \
-    fi
+# RUN set -x \
+#     && apk --no-cache add \
+#     libarchive-tools \
+#     zstd \
+#     jq \
+#     python2 \
+#     \
+#     && if [ "${ARCH}" != "s390x" ]; then \
+#     	apk add --no-cache rpm-dev; \
+#     fi
 
 RUN GOCR_VERSION="v0.5.1" && \
         if [ "${ARCH}" = "arm64" ]; then \
@@ -88,16 +108,16 @@ COPY --from=rpm-macros /usr/lib/rpm/macros.d/macros.systemd /usr/lib/rpm/macros.
 
 # Shell used for debugging
 FROM dapper AS shell
-RUN set -x \
-    && apk --no-cache add \
-    bash-completion \
-    iptables \
-    less \
-    psmisc \
-    rsync \
-    socat \
-    sudo \
-    vim
+# RUN set -x \
+#     && apk --no-cache add \
+#     bash-completion \
+#     iptables \
+#     less \
+#     psmisc \
+#     rsync \
+#     socat \
+#     sudo \
+#     vim
 # For integration tests
 RUN go get github.com/onsi/ginkgo/v2 github.com/onsi/gomega/...
 RUN GO111MODULE=off GOBIN=/usr/local/bin go get github.com/go-delve/delve/cmd/dlv
@@ -132,10 +152,10 @@ RUN rm -vf /charts/*.sh /charts/*.md
 # This image includes any host level programs that we might need. All binaries
 # must be placed in bin/ of the file image and subdirectories of bin/ will be flattened during installation.
 # This means bin/foo/bar will become bin/bar when rke2 installs this to the host
-FROM rancher/hardened-kubernetes:v1.23.9-rke2r1-build20220713 AS kubernetes
-FROM rancher/hardened-containerd:v1.5.13-k3s1-build20220606 AS containerd
-FROM rancher/hardened-crictl:v1.23.0-build20220414 AS crictl
-FROM rancher/hardened-runc:v1.1.2-build20220606 AS runc
+FROM bcitest/hardened-kubernetes:v1.23.9-rke2r2-build20220718 AS kubernetes
+FROM bcitest/hardened-containerd:v1.5.13-k3s1-build20220606 AS containerd
+FROM bcitest/hardened-crictl:v1.23.0-build20220414 AS crictl
+FROM bcitest/hardened-runc:v1.1.2-build20220606 AS runc
 
 FROM scratch AS runtime-collect
 COPY --from=runc \

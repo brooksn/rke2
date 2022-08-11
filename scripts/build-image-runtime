@@ -5,6 +5,10 @@ cd $(dirname $0)/..
 
 source ./scripts/version.sh
 
+
+# CREATED=$(shell date --iso-8601=s -u)
+# REF=$(shell git symbolic-ref HEAD)
+
 DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1} docker image build \
     --build-arg TAG=${VERSION} \
     --build-arg KUBERNETES_VERSION=${KUBERNETES_VERSION} \
@@ -12,24 +16,32 @@ DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1} docker image build \
     --build-arg MINOR=${VERSION_MINOR} \
     --build-arg DAPPER_HOST_ARCH=${GOARCH} \
     --build-arg CACHEBUST="$(date +%s%N)" \
+    --label "org.opencontainers.image.url=https://github.com/brooksn/rke2" \
+    --label "org.opencontainers.image.created=$(CREATED)" \
+    --label "org.opencontainers.image.authors=brooksn" \
+    --label "org.opencontainers.image.ref.name=$(REF)" \
     --tag ${REPO}/${PROG}-runtime:${DOCKERIZED_VERSION} \
     --tag ${REPO}/${PROG}-runtime:${DOCKERIZED_VERSION}-${GOOS}-${GOARCH} \
     --target runtime \
     --file Dockerfile \
     .
 
-if [ "${GOARCH}" != "s390x" ]; then
-  DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1} docker image build \
-      --build-arg TAG=${VERSION} \
-      --build-arg KUBERNETES_VERSION=${KUBERNETES_VERSION} \
-      --build-arg MAJOR=${VERSION_MAJOR} \
-      --build-arg MINOR=${VERSION_MINOR} \
-      --build-arg CACHEBUST="$(date +%s%N)" \
-      --tag ${REPO}/${PROG}-runtime:${DOCKERIZED_VERSION}-windows-amd64 \
-      --target windows-runtime \
-      --file Dockerfile.windows \
-      .
-fi
+# if [ "${GOARCH}" != "s390x" ]; then
+#   DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1} docker image build \
+#       --build-arg TAG=${VERSION} \
+#       --build-arg KUBERNETES_VERSION=${KUBERNETES_VERSION} \
+#       --build-arg MAJOR=${VERSION_MAJOR} \
+#       --build-arg MINOR=${VERSION_MINOR} \
+#       --build-arg CACHEBUST="$(date +%s%N)" \
+#         --label "org.opencontainers.image.url=https://github.com/brooksn/rke2" \
+#         --label "org.opencontainers.image.created=$(CREATED)" \
+#         --label "org.opencontainers.image.authors=brooksn" \
+#         --label "org.opencontainers.image.ref.name=$(REF)" \
+#       --tag ${REPO}/${PROG}-runtime:${DOCKERIZED_VERSION}-windows-amd64 \
+#       --target windows-runtime \
+#       --file Dockerfile.windows \
+#       .
+# fi
 mkdir -p build/images
 docker image save \
     --output build/images/${PROG}-runtime.tar \
