@@ -13,6 +13,8 @@ The **Chart** column indicates the Helm chart that uses this image. `CORE` indic
 | CORE | rancher/hardened-etcd | rancher/image-build-etcd | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | CORE | docker.io/rancher/klipper-helm | k3s-io/klipper-helm | ‣ alpine | FALSE |
 |  |  |  |  |  |
+| | rancher/rke2-upgrade | rancher/rke2-upgrade | ‣ alpine | FALSE |
+|  |  |  |  |  |
 | rke2-coredns | rancher/hardened-cluster-autoscaler | rancher/image-build-coredns | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | rke2-coredns | rancher/hardened-coredns | rancher/image-build-coredns | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | rke2-coredns | rancher/hardened-dns-node-cache | rancher/image-build-dns-nodecache | ‣ bci-base<br>‣ rancher/hardened-build-base<br>‣ rancher/hardened-kube-proxy | TRUE |
