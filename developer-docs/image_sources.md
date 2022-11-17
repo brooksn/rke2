@@ -4,30 +4,30 @@ The **Chart** column indicates the Helm chart that uses this image. `CORE` indic
 
 | Chart | Image | Build Repo | Source Images | Hardened |
 | ----- | ----- | ---------- | ------------- | -------- |
-| CORE | rancher/hardened-kubernetes | rancher/image-build-kubernetes | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
+| CORE | rancher/hardened-kubernetes | rancher/image-build-kubernetes | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | CORE | rancher/rke2-runtime | rancher/rke2 | ‣ rancher/k3s<br>‣ rancher/hardened-kubernetes<br>‣ rancher/hardened-containerd<br>‣ rancher/hardened-crictl<br>‣ rancher/hardened-runc | TRUE |
-| CORE FROM | rancher/hardened-containerd | rancher/image-build-containerd | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| CORE FROM | rancher/hardened-crictl | rancher/image-build-crictl | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| CORE FROM | rancher/hardened-runc | rancher/image-build-runc | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| CORE | rancher/rke2-cloud-provider  | rancher/image-build-rke2-cloud-provider | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| CORE | rancher/hardened-etcd | rancher/image-build-etcd | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
+| CORE FROM | rancher/hardened-containerd | rancher/image-build-containerd | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| CORE FROM | rancher/hardened-crictl | rancher/image-build-crictl | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| CORE FROM | rancher/hardened-runc | rancher/image-build-runc | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| CORE | rancher/rke2-cloud-provider  | rancher/image-build-rke2-cloud-provider | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| CORE | rancher/hardened-etcd | rancher/image-build-etcd | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | CORE | docker.io/rancher/klipper-helm | k3s-io/klipper-helm | ‣ alpine | FALSE |
 |  |  |  |  |  |
-| rke2-coredns | rancher/hardened-cluster-autoscaler | rancher/image-build-coredns | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| rke2-coredns | rancher/hardened-coredns | rancher/image-build-coredns | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| rke2-coredns | rancher/hardened-dns-node-cache | rancher/image-build-dns-nodecache | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base<br>‣ rancher/hardened-kube-proxy | TRUE |
+| rke2-coredns | rancher/hardened-cluster-autoscaler | rancher/image-build-coredns | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-coredns | rancher/hardened-coredns | rancher/image-build-coredns | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-coredns | rancher/hardened-dns-node-cache | rancher/image-build-dns-nodecache | ‣ bci-base<br>‣ rancher/hardened-build-base<br>‣ rancher/hardened-kube-proxy | TRUE |
 |  |  |  |  |  |
-| rke2-metrics-server | rancher/hardened-k8s-metrics-server | rancher/image-build-k8s-metrics-server | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-metrics-server | rancher/hardened-k8s-metrics-server | rancher/image-build-k8s-metrics-server | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 |  |  |  |  |  |
 | rke2-ingress-nginx | rancher/nginx-ingress-controller | rancher/ingress-nginx | ‣ ubi8/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
 | rke2-ingress-nginx | rancher/mirrored-jettech-kube-webhook-certgen | rancher/image-mirror |  | FALSE |
 |  |  |  |  |  |
-| rke2-canal | rancher/hardened-calico | rancher/image-build-calico | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base<br>‣ rancher/hardened-cni-plugins<br>‣ calico/bpftool<br>‣ calico/bird<br>centos | TRUE |
-| rke2-canal FROM | rancher/hardened-cni-plugins | rancher/image-build-cni-plugins | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| rke2-canal | rancher/hardened-flannel | rancher/image-build-flannel | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-canal | rancher/hardened-calico | rancher/image-build-calico | ‣ bci-base<br>‣ rancher/hardened-build-base<br>‣ rancher/hardened-cni-plugins<br>‣ calico/bpftool<br>‣ calico/bird<br>centos | TRUE |
+| rke2-canal FROM | rancher/hardened-cni-plugins | rancher/image-build-cni-plugins | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-canal | rancher/hardened-flannel | rancher/image-build-flannel | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 |  |  |  |  |  |
-| rke2-multus | rancher/hardened-multus-cni | rancher/image-build-multus | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
-| rke2-multus | rancher/hardened-cni-plugins | rancher/image-build-cni-plugins | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-multus | rancher/hardened-multus-cni | rancher/image-build-multus | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+| rke2-multus | rancher/hardened-cni-plugins | rancher/image-build-cni-plugins | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 |  |  |  |  |  |
 | rancher-sriov | rancher/hardened-sriov-cni  | rancher/image-build-sriov-cni | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
 | rancher-sriov | rancher/hardened-ib-sriov-cni | rancher/image-build-ib-sriov-cni | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
