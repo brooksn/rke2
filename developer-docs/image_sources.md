@@ -28,7 +28,8 @@ The **Chart** column indicates the Helm chart that uses this image. `CORE` indic
 |  |  |  |  |  |
 | rke2-multus | rancher/hardened-multus-cni | rancher/image-build-multus | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 | rke2-multus | rancher/hardened-cni-plugins | rancher/image-build-cni-plugins | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
-| rke2-multus | rancher/hardened-whereabouts | rancher/image-build-whereabouts | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
+|  |  |  |  |  |
+| rke2-whereabouts | rancher/hardened-whereabouts | rancher/image-build-whereabouts | ‣ bci-base<br>‣ rancher/hardened-build-base | TRUE |
 |  |  |  |  |  |
 | rancher-sriov | rancher/hardened-sriov-cni  | rancher/image-build-sriov-cni | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
 | rancher-sriov | rancher/hardened-ib-sriov-cni | rancher/image-build-ib-sriov-cni | ‣ ubi7/ubi-minimal<br>‣ rancher/hardened-build-base | TRUE |
