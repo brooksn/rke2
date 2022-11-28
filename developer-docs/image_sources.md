@@ -73,4 +73,4 @@ The **Chart** column indicates the Helm chart that uses this image. `CORE` indic
 | harvester-csi-driver | docker.io/rancher/longhornio-csi-provisioner | Longhorn team |  | FALSE |
 | harvester-csi-driver | docker.io/rancher/longhornio-csi-resizer | Longhorn team |  | FALSE |
 |  |  |  |  |  |
-| system-upgrade-controller | rancher/system-upgrade-controller | rancher/system-upgrade-controller |  | FALSE |
+| system-upgrade-controller | rancher/system-upgrade-controller | rancher/system-upgrade-controller | ‣ SLES | FALSE |
