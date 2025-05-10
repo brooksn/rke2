@@ -20,9 +20,9 @@ jobs:
         curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
         chmod +x /usr/local/bin/dapper
     - name: Build
-      run: dapper -f Dockerfile --target dapper make dapper-ci
+      run: make ci
     - name: Test
-      run: dapper -f Dockerfile --target dapper make test
+      run: make test
     - name: Prepare Test Logs on Failure
       if: ${{ failure() }}
       run: |
@@ -45,6 +45,5 @@ jobs:
         curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
         chmod +x /usr/local/bin/dapper
     - name: Build
-      run: |
-        dapper -f Dockerfile --target dapper make dapper-ci
+      run: make ci
         
