@@ -35,22 +35,6 @@ jobs:
     - name: Build
       run: |
         dapper -f Dockerfile --target dapper make dapper-ci
-    
-    - name: "Read secrets"
-      uses: hashicorp/vault-action@v3
-      with:
-        url: ${{ secrets.VAULT_URL }}
-        method: jwt
-        exportEnv: true
-        path: jwt
-        role: rke2
-        secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD
-
     - name: Package Images
       run: |
         dapper -f Dockerfile --target dapper make package-images
@@ -84,13 +68,13 @@ jobs:
         make-target: publish-image-runtime
 
         public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
+        public-username: ${{ secrets.DOCKER_USERNAME }}
+        public-password: ${{ secrets.DOCKER_PASSWORD }}
 
         prime-repo: rancher
-        prime-registry: ${{ env.PRIME_REGISTRY }}
-        prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+        prime-registry: ${{ secrets.PRIME_REGISTRY }}
+        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
 
     - name: Publish Image Runtime (Windows)
       uses: rancher/ecm-distro-tools/actions/publish-image@master
@@ -103,13 +87,13 @@ jobs:
         make-target: publish-image-runtime-windows
 
         public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
+        public-username: ${{ secrets.DOCKER_USERNAME }}
+        public-password: ${{ secrets.DOCKER_PASSWORD }}
 
         prime-repo: rancher
-        prime-registry: ${{ env.PRIME_REGISTRY }}
-        prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+        prime-registry: ${{ secrets.PRIME_REGISTRY }}
+        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
   
     - name: Package windows images
       run: |
@@ -142,22 +126,6 @@ jobs:
     - name: Build
       run: |
         dapper -f Dockerfile --target dapper make dapper-ci
-    
-    - name: "Read secrets"
-      uses: hashicorp/vault-action@v3
-      with:
-        url: ${{ secrets.VAULT_URL }}
-        method: jwt
-        exportEnv: true
-        path: jwt
-        role: rke2
-        secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD ;
-
     - name: Package Images
       run: |
         dapper -f Dockerfile --target dapper make package-images
@@ -178,13 +146,13 @@ jobs:
         make-target: publish-image-runtime
 
         public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
+        public-username: ${{ secrets.DOCKER_USERNAME }}
+        public-password: ${{ secrets.DOCKER_PASSWORD }}
 
         prime-repo: rancher
-        prime-registry: ${{ env.PRIME_REGISTRY }}
-        prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+        prime-registry: ${{ secrets.PRIME_REGISTRY }}
+        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
 
     - name: Checksum
       run: |
@@ -207,21 +175,6 @@ jobs:
         curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
         chmod +x /usr/local/bin/dapper
 
-    - name: "Read secrets"
-      uses: hashicorp/vault-action@v3
-      with:
-        url: ${{ secrets.VAULT_URL }}
-        method: jwt
-        exportEnv: true
-        path: jwt
-        role: rke2
-        secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | PRIME_REGISTRY_PASSWORD ;
-
     - name: Manifest
       uses: rancher/ecm-distro-tools/actions/publish-image@master
       env:
@@ -233,10 +186,10 @@ jobs:
         make-target: publish-manifest-runtime
 
         public-repo: rancher
-        public-username: ${{ env.DOCKER_USERNAME }}
-        public-password: ${{ env.DOCKER_PASSWORD }}
+        public-username: ${{ secrets.DOCKER_USERNAME }}
+        public-password: ${{ secrets.DOCKER_PASSWORD }}
 
         prime-repo: rancher
-        prime-registry: ${{ env.PRIME_REGISTRY }}
-        prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+        prime-registry: ${{ secrets.PRIME_REGISTRY }}
+        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
