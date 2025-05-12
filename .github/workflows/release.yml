@@ -38,12 +38,30 @@ jobs:
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make dapper-ci
-    - name: Package Images
-      env:
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-      run: |
-        dapper -f Dockerfile --target dapper make package-images
+    # - name: Package Images
+    #   env:
+    #     REPO: ${{ vars.REPO }}
+    #     REGISTRY: ${{ secrets.REGISTRY }}
+    #   run: |
+    #     dapper -f Dockerfile --target dapper make package-images
+    
+    # - name: Scan Images
+    #   continue-on-error: true
+    #   env:
+    #     REPO: ${{ vars.REPO }}
+    #     REGISTRY: ${{ secrets.REGISTRY }}
+    #   # This is a temporary workaround until the base image is updated
+    #   # in the Dockerfile to include the new trivy version that supports VEX
+    #   run: |
+    #     docker run --rm -v "$(pwd)/build:/build" -v "$(pwd):/workspace" \
+    #       -w /workspace rancher/hardened-build-base:v1.24.2b1 \
+    #       make scan-images
+    # - name: Upload Scan Results
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: release-trivy-scan
+    #     path: trivy_scan_report.txt
+        
     - name: Test
       env:
         REPO: ${{ vars.REPO }}
@@ -111,102 +129,102 @@ jobs:
         GH_TOKEN: ${{ github.token }}
         REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
-  release-arm64:
-    runs-on: ubuntu-22.04-arm
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  # release-arm64:
+  #   runs-on: ubuntu-22.04-arm
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
 
-    - name: Install Dapper
-      run: |
-        curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
-        chmod +x /usr/local/bin/dapper
+  #   - name: Install Dapper
+  #     run: |
+  #       curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
+  #       chmod +x /usr/local/bin/dapper
 
-    - name: Validate Release
-      run: |
-       dapper -f Dockerfile --target dapper make validate-release
+  #   - name: Validate Release
+  #     run: |
+  #      dapper -f Dockerfile --target dapper make validate-release
 
-    - name: Build
-      env:
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-      run: |
-        dapper -f Dockerfile --target dapper make dapper-ci
-    - name: Package Images
-      env:
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-      run: |
-        dapper -f Dockerfile --target dapper make package-images
+  #   - name: Build
+  #     env:
+  #       REPO: ${{ vars.REPO }}
+  #       REGISTRY: ${{ secrets.REGISTRY }}
+  #     run: |
+  #       dapper -f Dockerfile --target dapper make dapper-ci
+  #   - name: Package Images
+  #     env:
+  #       REPO: ${{ vars.REPO }}
+  #       REGISTRY: ${{ secrets.REGISTRY }}
+  #     run: |
+  #       dapper -f Dockerfile --target dapper make package-images
     
-    - name: Scan Images
-      env:
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-      continue-on-error: true
-      run: |
-        dapper -f Dockerfile --target dapper make scan-images
+  #   - name: Scan Images
+  #     env:
+  #       REPO: ${{ vars.REPO }}
+  #       REGISTRY: ${{ secrets.REGISTRY }}
+  #     continue-on-error: true
+  #     run: |
+  #       dapper -f Dockerfile --target dapper make scan-images
 
-    - name: Publish Image Runtime
-      uses: rancher/ecm-distro-tools/actions/publish-image@master
-      env:
-        GOARCH: arm64
-        GOOS: linux
-      with:
-        image: "rke2-runtime"
-        tag: ${{ github.ref_name }}
-        make-target: publish-image-runtime
+  #   - name: Publish Image Runtime
+  #     uses: rancher/ecm-distro-tools/actions/publish-image@master
+  #     env:
+  #       GOARCH: arm64
+  #       GOOS: linux
+  #     with:
+  #       image: "rke2-runtime"
+  #       tag: ${{ github.ref_name }}
+  #       make-target: publish-image-runtime
 
-        public-repo: rancher
-        public-username: ${{ secrets.DOCKER_USERNAME }}
-        public-password: ${{ secrets.DOCKER_PASSWORD }}
+  #       public-repo: rancher
+  #       public-username: ${{ secrets.DOCKER_USERNAME }}
+  #       public-password: ${{ secrets.DOCKER_PASSWORD }}
 
-        prime-repo: rancher
-        prime-registry: ${{ secrets.PRIME_REGISTRY }}
-        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
+  #       prime-repo: rancher
+  #       prime-registry: ${{ secrets.PRIME_REGISTRY }}
+  #       prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+  #       prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
 
-    - name: Checksum
-      env:
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-      run: |
-        GITHUB_ACTION_TAG=${{ github.ref_name }} dapper -f Dockerfile --target dapper make checksum
+  #   - name: Checksum
+  #     env:
+  #       REPO: ${{ vars.REPO }}
+  #       REGISTRY: ${{ secrets.REGISTRY }}
+  #     run: |
+  #       GITHUB_ACTION_TAG=${{ github.ref_name }} dapper -f Dockerfile --target dapper make checksum
 
-    - name: Publish Artifacts
-      run: |
-        dapper -f Dockerfile --target dapper make publish-binary
-      env:
-        GH_TOKEN: ${{ github.token }}
-        REPO: ${{ vars.REPO }}
-        REGISTRY: ${{ secrets.REGISTRY }}
-  manifest:
-    needs: [release-amd64, release-arm64]
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   - name: Publish Artifacts
+  #     run: |
+  #       dapper -f Dockerfile --target dapper make publish-binary
+  #     env:
+  #       GH_TOKEN: ${{ github.token }}
+  #       REPO: ${{ vars.REPO }}
+  #       REGISTRY: ${{ secrets.REGISTRY }}
+  # manifest:
+  #   needs: [release-amd64, release-arm64]
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
 
-    - name: Install Dapper
-      run: |
-        curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
-        chmod +x /usr/local/bin/dapper
+  #   - name: Install Dapper
+  #     run: |
+  #       curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
+  #       chmod +x /usr/local/bin/dapper
 
-    - name: Manifest
-      uses: rancher/ecm-distro-tools/actions/publish-image@master
-      env:
-        GOARCH: amd64
-        GOOS: linux
-      with:
-        image: "rke2-runtime"
-        tag: ${{ github.ref_name }}
-        make-target: publish-manifest-runtime
+  #   - name: Manifest
+  #     uses: rancher/ecm-distro-tools/actions/publish-image@master
+  #     env:
+  #       GOARCH: amd64
+  #       GOOS: linux
+  #     with:
+  #       image: "rke2-runtime"
+  #       tag: ${{ github.ref_name }}
+  #       make-target: publish-manifest-runtime
 
-        public-repo: rancher
-        public-username: ${{ secrets.DOCKER_USERNAME }}
-        public-password: ${{ secrets.DOCKER_PASSWORD }}
+  #       public-repo: rancher
+  #       public-username: ${{ secrets.DOCKER_USERNAME }}
+  #       public-password: ${{ secrets.DOCKER_PASSWORD }}
 
-        prime-repo: rancher
-        prime-registry: ${{ secrets.PRIME_REGISTRY }}
-        prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
+  #       prime-repo: rancher
+  #       prime-registry: ${{ secrets.PRIME_REGISTRY }}
+  #       prime-username: ${{ secrets.PRIME_REGISTRY_USERNAME }}
+  #       prime-password: ${{ secrets.PRIME_REGISTRY_PASSWORD }}
