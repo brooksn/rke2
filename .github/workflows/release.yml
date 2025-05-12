@@ -9,7 +9,7 @@ on:
     - "v*"
 
 env:
-  REPO: ${{ env.REPO }}
+  REPO: ${{ github.env.REPO }}
   GITHUB_ACTION_TAG: ${{ github.ref_name }}
   GH_TOKEN: ${{ github.token }}
   
