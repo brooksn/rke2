@@ -66,14 +66,14 @@ jobs:
           gh release download "$TAG" --repo "rancher/rke2" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
       - name: Package Images
         env:
-          GIT_TAG: ${{ env.GIT_TAG }}
+          GIT_TAG: ${{ env.TAG }}
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
         run: |
           dapper -f Dockerfile --target dapper make package-images
       - name: Package windows images
         if: ${{ matrix.arch == 'amd64' }}
         env:
-          GIT_TAG: ${{ env.GIT_TAG }}
+          GIT_TAG: ${{ env.TAG }}
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
         run: |
           dapper -f Dockerfile --target dapper make package-windows-images
