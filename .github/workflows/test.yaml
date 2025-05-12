@@ -1,0 +1,27 @@
+on:
+  pull_request:
+name: PR test
+
+jobs:
+  build:
+    name: build-${{ matrix.arch }}-${{ matrix.priv }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+        priv: [false, true]
+    steps:
+      - name: Build
+        run: echo "Building ${{ matrix.arch }} (priv=${{ matrix.priv }})"
+
+  manifest:
+    name: manifest-priv-${{ matrix.priv }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        priv: [false, true]
+    steps:
+      - name: Publish multi-arch manifest
+        run: |
+          echo "Publishing manifest for priv=${{ matrix.priv }}"
