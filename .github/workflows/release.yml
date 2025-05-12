@@ -34,13 +34,13 @@ jobs:
 
     - name: Build
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make dapper-ci
     - name: Package Images
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make package-images
@@ -48,7 +48,7 @@ jobs:
     - name: Scan Images
       continue-on-error: true
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       # This is a temporary workaround until the base image is updated
       # in the Dockerfile to include the new trivy version that supports VEX
@@ -64,7 +64,7 @@ jobs:
         
     - name: Test
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make test
@@ -109,14 +109,14 @@ jobs:
   
     - name: Package windows images
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         GITHUB_ACTION_TAG=${{ github.ref_name }} dapper -f Dockerfile --target dapper make package-windows-images
 
     - name: Checksum Artifacts
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         GITHUB_ACTION_TAG=${{ github.ref_name }} dapper -f Dockerfile --target dapper make checksum
@@ -127,7 +127,7 @@ jobs:
         dapper -f Dockerfile --target dapper make publish-binary
       env:
         GH_TOKEN: ${{ github.token }}
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
   release-arm64:
     runs-on: ubuntu-22.04-arm
@@ -146,20 +146,20 @@ jobs:
 
     - name: Build
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make dapper-ci
     - name: Package Images
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         dapper -f Dockerfile --target dapper make package-images
     
     - name: Scan Images
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       continue-on-error: true
       run: |
@@ -186,7 +186,7 @@ jobs:
 
     - name: Checksum
       env:
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
       run: |
         GITHUB_ACTION_TAG=${{ github.ref_name }} dapper -f Dockerfile --target dapper make checksum
@@ -196,7 +196,7 @@ jobs:
         dapper -f Dockerfile --target dapper make publish-binary
       env:
         GH_TOKEN: ${{ github.token }}
-        REPO: ${{ github.env.REPO }}
+        REPO: ${{ vars.REPO }}
         REGISTRY: ${{ secrets.REGISTRY }}
   manifest:
     needs: [release-amd64, release-arm64]
