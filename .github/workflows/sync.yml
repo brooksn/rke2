@@ -4,6 +4,7 @@ on:
   push:
 
 env:
+  GITHUB_ACTION_TAG: "v1.33.0+rke2r1"
   TAG: "v1.33.0+rke2r1"
   GH_TOKEN: ${{ github.token }}
 
