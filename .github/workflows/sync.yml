@@ -5,7 +5,6 @@ on:
 
 env:
   TAG: "v1.33.0+rke2r1"
-  GIT_TAG: "v1.33.0+rke2r1"
   GH_TOKEN: ${{ github.token }}
 
 name: Sync
@@ -67,12 +66,14 @@ jobs:
           gh release download "$TAG" --repo "rancher/rke2" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
       - name: Package Images
         env:
+          GIT_TAG: ${{ env.GIT_TAG }}
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
         run: |
           dapper -f Dockerfile --target dapper make package-images
       - name: Package windows images
         if: ${{ matrix.arch == 'amd64' }}
         env:
+          GIT_TAG: ${{ env.GIT_TAG }}
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
         run: |
           dapper -f Dockerfile --target dapper make package-windows-images
