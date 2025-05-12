@@ -63,7 +63,7 @@ jobs:
           aws-region: us-east-1
       - name: Download Binaries
         run: |
-          gh release download "$TAG" --repo "${{ github.repository }}" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
+          gh release download "$TAG" --repo "rancher/rke2" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
       - name: Package Images
         env:
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
