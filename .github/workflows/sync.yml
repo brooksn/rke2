@@ -1,0 +1,95 @@
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+env:
+  GITHUB_ACTION_TAG: "v1.33.0+rke2r1"
+  TAG: "v1.33.0+rke2r1"
+  GH_TOKEN: ${{ github.token }}
+
+
+name: Sync
+permissions:
+    contents: write
+jobs:
+  download:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+  sync-prime-ribs:
+    name: "Sync Prime ribs"
+    needs: [download]
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+        #   - arm64
+          - amd64
+        include:
+        #   - arch: arm64
+        #     runner: 8cpu-linux-arm64
+        #     image: ubuntu22-full-arm64
+          - arch: amd64
+            runner: 8cpu-linux-x64
+            image: ubuntu22-full-x64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Dapper
+        run: |
+          curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
+          chmod +x /usr/local/bin/dapper
+      - name: Make artifacts directory
+        run: |
+          mkdir -p dist/artifacts
+    #   - name: "Read secrets"
+    #     uses: rancher-eio/read-vault-secrets@main
+    #     with:
+    #       secrets: |
+    #         secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry | PRIME_REGISTRY ;
+    #         secret/data/github/repo/${{ github.repository }}/prime-artifacts-uploader/credentials accessKeyId | AWS_ACCESS_KEY_ID;
+    #         secret/data/github/repo/${{ github.repository }}/prime-artifacts-uploader/credentials secretAccessKey | AWS_SECRET_ACCESS_KEY
+    #         secret/data/github/repo/${{ github.repository }}/prime-artifacts-uploader/credentials primeArtifactsBucketName | PRIME_ARTIFACTS_BUCKET_NAME
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Download Binaries
+        run: |
+          gh release download "$TAG" --repo "rancher/rke2" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
+      - name: Pull rke2-runtime
+        env:
+          GIT_TAG: ${{ env.TAG }}
+          REGISTRY: ${{ secrets.PRIME_REGISTRY }}
+        run: |
+          docker pull "${REGISTRY}/rancher/rke2-runtime:${GIT_TAG/+/-}"
+      - name: Package Images
+        env:
+          GIT_TAG: ${{ env.TAG }}
+          REGISTRY: ${{ secrets.PRIME_REGISTRY }}
+        run: |
+          dapper -f Dockerfile --target dapper make package-images
+      - name: Package windows images
+        if: ${{ matrix.arch == 'amd64' }}
+        env:
+          GIT_TAG: ${{ env.TAG }}
+          REGISTRY: ${{ secrets.PRIME_REGISTRY }}
+        run: |
+          dapper -f Dockerfile --target dapper make package-windows-images
+      - name: Checksum Artifacts
+        run: |
+          dapper -f Dockerfile --target dapper make checksum
+      - name: Upload Artifacts
+        env:
+          S3_PATH: s3://${{ secrets.PRIME_ARTIFACTS_BUCKET_NAME }}/rke2/${{ env.TAG }}
+        run: |
+          aws s3 sync ./dist/artifacts "$S3_PATH" --quiet --no-progress
