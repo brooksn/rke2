@@ -8,6 +8,7 @@ env:
   TAG: "v1.33.0+rke2r1"
   GH_TOKEN: ${{ github.token }}
 
+
 name: Sync
 permissions:
     contents: write
