@@ -66,6 +66,13 @@ jobs:
       - name: Download Binaries
         run: |
           gh release download "$TAG" --repo "rancher/rke2" --dir ./dist/artifacts -p "rke2.*" -p "*.exe"
+      - name: Pull rke2-runtime
+        env:
+          GIT_TAG: ${{ env.TAG }}
+          REGISTRY: ${{ secrets.PRIME_REGISTRY }}
+        run: |
+          source ./scripts/version.sh
+          docker pull "${REGISTRY}/rancher/rke2-runtime:${DOCKERIZED_VERSION}"
       - name: Package Images
         env:
           GIT_TAG: ${{ env.TAG }}
