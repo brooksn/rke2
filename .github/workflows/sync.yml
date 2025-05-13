@@ -71,8 +71,7 @@ jobs:
           GIT_TAG: ${{ env.TAG }}
           REGISTRY: ${{ secrets.PRIME_REGISTRY }}
         run: |
-          source ./scripts/version.sh
-          docker pull "${REGISTRY}/rancher/rke2-runtime:${DOCKERIZED_VERSION}"
+          docker pull "${REGISTRY}/rancher/rke2-runtime:${GIT_TAG/+/-}"
       - name: Package Images
         env:
           GIT_TAG: ${{ env.TAG }}
